@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    a:link {
+        color: green;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    a:visited {
+        color: pink;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: red;
+        background-color: transparent;
+        text-decoration: underline;
+    }
+
+    a:active {
+        color: yellow;
+        background-color: transparent;
+        text-decoration: underline;
+    }
+</style>
+</head>
+
+<body>
+
+    <h2>Link Colors</h2>
+
+    <p>You can change the default colors of links</p>
+
+    <a href="html_images.asp" target="_blank">HTML Images</a>
+
+    <p><a href="#C4">Jump to Chapter 1</a></p>
+<p><a href="#C10">Jump to Chapter 2</a></p>
+
+<h2>Chapter 1</h2>
+<p>Đỗ Văn trung-2121051250</p>
+
+<h2>Chapter 2</h2>
+<p>Đỗ Văn trung-2121051250</p>
+
+    <body>
+
+
+    </body>
+
+</html>
