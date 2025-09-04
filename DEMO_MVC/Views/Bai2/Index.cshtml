@@ -1,0 +1,27 @@
+@model DEMO_MVC.Models.Bai2Model
+
+<h2>Bài 2 - Máy tính đơn giản</h2>
+
+<form method="post">
+    <label>Số 1:</label>
+    <input type="number" step="any" name="So1" value="@Model?.So1" /><br />
+
+    <label>Số 2:</label>
+    <input type="number" step="any" name="So2" value="@Model?.So2" /><br />
+
+    <label>Phép tính:</label>
+    <select name="PhepTinh">
+        <option value="Cong">Cộng</option>
+        <option value="Tru">Trừ</option>
+        <option value="Nhan">Nhân</option>
+        <option value="Chia">Chia</option>
+    </select><br />
+
+    <button type="submit">Tính</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model?.ThongBao))
+{
+    <h3>Kết quả</h3>
+    <p>@Model.ThongBao</p>
+}

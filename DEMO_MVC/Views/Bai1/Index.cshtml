@@ -1,0 +1,19 @@
+@model DEMO_MVC.Models.Bai1Model
+
+<h2>Bài 1 - Tính tuổi</h2>
+
+<form method="post">
+    <label>Họ tên:</label>
+    <input type="text" name="HoTen" value="@Model?.HoTen" /><br />
+
+    <label>Năm sinh:</label>
+    <input type="number" name="NamSinh" value="@Model?.NamSinh" /><br />
+
+    <button type="submit">Xem kết quả</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model?.ThongBao))
+{
+    <h3>Kết quả</h3>
+    <p>@Model.ThongBao</p>
+}

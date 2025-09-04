@@ -1,0 +1,19 @@
+@model DEMO_MVC.Models.Bai3Model
+
+<h2>Bài 3 - Tính chỉ số BMI</h2>
+
+<form method="post">
+    <label>Cân nặng (kg):</label>
+    <input type="number" name="CanNang" step="any" value="@Model?.CanNang" /><br />
+
+    <label>Chiều cao (cm):</label>
+    <input type="number" name="ChieuCaoCm" step="any" value="@Model?.ChieuCaoCm" /><br />
+
+    <button type="submit">Tính BMI</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model?.ThongBao))
+{
+    <h3>Kết quả</h3>
+    <p>@Model.ThongBao</p>
+}
