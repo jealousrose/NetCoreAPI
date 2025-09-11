@@ -1,9 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace DEMO_MVC.Models
 {
+    [Table("Persons")]
     public class Person
     {
-        public string PersonId { get; set; }   // Mã định danh
-        public string FullName { get; set; }   // Họ tên
-        public string Address { get; set; }    // Địa chỉ
+        [Key]
+        public string PersonId { get; set; }
+        public string FullName { get; set; }
+        public string Address { get; set; }
     }
 }
