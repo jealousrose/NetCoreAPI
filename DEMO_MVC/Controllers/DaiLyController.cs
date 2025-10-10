@@ -10,22 +10,23 @@ using DEMO_MVC.Models;
 
 namespace DEMO_MVC.Controllers
 {
-    public class EmployeeController : Controller
+    public class DaiLyController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public EmployeeController(ApplicationDbContext context)
+        public DaiLyController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Employee
+        // GET: DaiLy
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Employees.ToListAsync());
+            var applicationDbContext = _context.DaiLys.Include(d => d.HeThongPhanPhoi);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Employee/Details/5
+        // GET: DaiLy/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -33,39 +34,42 @@ namespace DEMO_MVC.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(m => m.PersonId == id);
-            if (employee == null)
+            var daiLy = await _context.DaiLys
+                .Include(d => d.HeThongPhanPhoi)
+                .FirstOrDefaultAsync(m => m.MaDaiLy == id);
+            if (daiLy == null)
             {
                 return NotFound();
             }
 
-            return View(employee);
+            return View(daiLy);
         }
 
-        // GET: Employee/Create
+        // GET: DaiLy/Create
         public IActionResult Create()
         {
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi_1, "MaHTPP", "MaHTPP");
             return View();
         }
 
-        // POST: Employee/Create
+        // POST: DaiLy/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EmployeeId,Age,PersonId,FullName,Address")] Employee employee)
+        public async Task<IActionResult> Create([Bind("MaDaiLy,TenDaiLy,DiaChi,NguoiDaiDien,DienThoai,MaHTPP")] DaiLy daiLy)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(employee);
+                _context.Add(daiLy);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi_1, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            return View(daiLy);
         }
 
-        // GET: Employee/Edit/5
+        // GET: DaiLy/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -73,22 +77,23 @@ namespace DEMO_MVC.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
+            var daiLy = await _context.DaiLys.FindAsync(id);
+            if (daiLy == null)
             {
                 return NotFound();
             }
-            return View(employee);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi_1, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            return View(daiLy);
         }
 
-        // POST: Employee/Edit/5
+        // POST: DaiLy/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("EmployeeId,Age,PersonId,FullName,Address")] Employee employee)
+        public async Task<IActionResult> Edit(string id, [Bind("MaDaiLy,TenDaiLy,DiaChi,NguoiDaiDien,DienThoai,MaHTPP")] DaiLy daiLy)
         {
-            if (id != employee.PersonId)
+            if (id != daiLy.MaDaiLy)
             {
                 return NotFound();
             }
@@ -97,12 +102,12 @@ namespace DEMO_MVC.Controllers
             {
                 try
                 {
-                    _context.Update(employee);
+                    _context.Update(daiLy);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EmployeeExists(employee.PersonId))
+                    if (!DaiLyExists(daiLy.MaDaiLy))
                     {
                         return NotFound();
                     }
@@ -113,10 +118,11 @@ namespace DEMO_MVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi_1, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
+            return View(daiLy);
         }
 
-        // GET: Employee/Delete/5
+        // GET: DaiLy/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -124,34 +130,35 @@ namespace DEMO_MVC.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(m => m.PersonId == id);
-            if (employee == null)
+            var daiLy = await _context.DaiLys
+                .Include(d => d.HeThongPhanPhoi)
+                .FirstOrDefaultAsync(m => m.MaDaiLy == id);
+            if (daiLy == null)
             {
                 return NotFound();
             }
 
-            return View(employee);
+            return View(daiLy);
         }
 
-        // POST: Employee/Delete/5
+        // POST: DaiLy/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee != null)
+            var daiLy = await _context.DaiLys.FindAsync(id);
+            if (daiLy != null)
             {
-                _context.Employees.Remove(employee);
+                _context.DaiLys.Remove(daiLy);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EmployeeExists(string id)
+        private bool DaiLyExists(string id)
         {
-            return _context.Employees.Any(e => e.PersonId == id);
+            return _context.DaiLys.Any(e => e.MaDaiLy == id);
         }
     }
 }
