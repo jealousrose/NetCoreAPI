@@ -2,25 +2,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DEMO_MVC.Data;
 using DEMO_MVC.Models;
-
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System;
+using System.Linq;
+using DemoMVC.Models.Process;
 namespace DEMO_MVC.Controllers
 {
     public class PersonController : Controller
     {
         private readonly ApplicationDbContext _context;
 
+        private ExcelProcess _excelProcess = new ExcelProcess();
+        
+
         public PersonController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Person
         public async Task<IActionResult> Index()
         {
             return View(await _context.Person.ToListAsync());
         }
 
-        // GET: Person/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null || _context.Person == null)
@@ -38,13 +43,11 @@ namespace DEMO_MVC.Controllers
             return View(person);
         }
 
-        // GET: Person/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Person/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("PersonId,FullName,Address")] Person person)
@@ -58,7 +61,6 @@ namespace DEMO_MVC.Controllers
             return View(person);
         }
 
-        // GET: Person/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null || _context.Person == null)
@@ -74,7 +76,6 @@ namespace DEMO_MVC.Controllers
             return View(person);
         }
 
-        // POST: Person/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("PersonId,FullName,Address")] Person person)
@@ -107,7 +108,6 @@ namespace DEMO_MVC.Controllers
             return View(person);
         }
 
-        // GET: Person/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null || _context.Person == null)
@@ -125,7 +125,6 @@ namespace DEMO_MVC.Controllers
             return View(person);
         }
 
-        // POST: Person/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -144,10 +143,53 @@ namespace DEMO_MVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Kiểm tra Person có tồn tại trong CSDL không
         private bool PersonExists(string id)
         {
             return (_context.Person?.Any(e => e.PersonId == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> Upload()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            if (file != null)
+            {
+                string fileExtension = Path.GetExtension(file.FileName);
+
+                if (fileExtension != ".xls" && fileExtension != ".xlsx")
+                {
+                    ModelState.AddModelError("", "Please choose excel file to upload!");
+                }
+                else
+                {
+                    var fileName = DateTime.Now.ToShortTimeString() + fileExtension;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads/Excels", fileName);
+                    var fileLocation = new FileInfo(filePath).ToString();
+                    
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                        var dt = _excelProcess.ExcelToDataTable(fileLocation);
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            Person person = new Person();
+                            person.PersonId = dt.Rows[i][0].ToString();
+                            person.FullName = dt.Rows[i][1].ToString();
+                            person.Address = dt.Rows[i][2].ToString();
+                            _context.Person.Add(person);
+                        }
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+
+            return View();
         }
     }
 }
